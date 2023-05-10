@@ -1,23 +1,42 @@
-import logo from './logo.svg';
+
+import { useEffect, useState } from 'react';
 import './App.css';
 
 function App() {
+  const [data, setData] = useState([]);
+
+  const fetchUserData = () => {
+    fetch("https://api.tvmaze.com/search/shows?q=all")
+      .then(response => {
+        return response.json()
+      })
+      .then(data => {
+        setData(data)
+      })
+  }
+  
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app container">
+      {
+        data.map((d) => {
+          return <div className="card"  key={d.show.id}>
+            <img src={d.show.image===null ? "https://static.tvmaze.com/uploads/images/medium_portrait/425/1064746.jpg" : d.show.image.medium} class="card-img-top" alt="..." />
+            <div class="card-body">
+              <h1 class="card-title">{d.show.name}</h1>
+              <div className='info'>
+              <p>Language: {d.show.language}</p>
+              <p style={{marginLeft:"10px"}}>Rating: {d.show.rating.average}</p>
+              </div>
+              <a href={d.show.url} target='blank' class="btn btn-primary">Go somewhere</a>
+            </div>
+          </div>
+        })
+      }
     </div>
   );
 }
